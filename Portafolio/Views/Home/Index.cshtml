@@ -1,0 +1,15 @@
+﻿@model HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<partial name="_Presentacion" />
+<partial name="_Habilidades" />
+
+@if (Model.Proyectos is not null) {
+    <div class="text-center" style="padding-top: 6rem">
+        <h1>Mis trabajos recientes</h1>
+
+    </div>
+}
