@@ -1,63 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Portafolio.Models;
+using Portafolio.Servicios;
 using System.Diagnostics;
-
+//una accion es un metodo de un controlador que le retorna contenido al usario, puede ser un documento html, un archivo pdf, excel o un string simple texto
+//
 namespace Portafolio.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IRepositorioProyectos repositorioProyectos;
+        private readonly ServcioDelimitado servcioDelimitado;
+        private readonly ServcioTransitorio servcioTransitorio;
+        private readonly ServcioUnico servcioUnico;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IRepositorioProyectos repositorioProyectos,
+            ServcioDelimitado servcioDelimitado, ServcioTransitorio servcioTransitorio, ServcioUnico servcioUnico)
         {
             _logger = logger;
+            this.repositorioProyectos = repositorioProyectos;
+            this.servcioDelimitado = servcioDelimitado;
+            this.servcioTransitorio = servcioTransitorio;
+            this.servcioUnico = servcioUnico;
         }
 
         public IActionResult Index()
         {
-            var Proyectos = ObtenerProyectos().Take(3).ToList();
-            var modelo = new HomeIndexViewModel() { Proyectos = Proyectos };
+          
+            var Proyectos = repositorioProyectos.ObtenerProyectos().Take(3).ToList();
+            var guidViewModel = new EjemploGuidViewModel()
+            {
+                Delimitado = servcioDelimitado.ObtenerGuid,
+                Transitorio = servcioTransitorio.ObtenerGuid,
+                Unico = servcioUnico.ObtenerGuid
+            };
+            var modelo = new HomeIndexViewModel() { 
+                Proyectos = Proyectos, 
+                EjemploGUID_1 = guidViewModel
+            };
             return View(modelo);
         }
 
-        private List<Proyecto> ObtenerProyectos()
-        {
-            return new List <Proyecto>()
-            {
-              new Proyecto
-              {
-                  Titulo = "Amazon",
-                  Descripcion = "E-comerce realizado en React",
-                  Link = "https://amazon.com",
-                  ImagenUrl = "/imagenes/amazon.png"
-
-              },
-              new Proyecto
-              {
-                  Titulo = "New York Times",
-                  Descripcion = "Pagina de noticias en React",
-                  Link = "https://nytimes.com",
-                  ImagenUrl = "/imagenes/nyt.png"
-
-              },
-              new Proyecto
-              {
-                  Titulo = "Reddit",
-                  Descripcion = "Red social para compartir comunidades",
-                  Link = "https://reddit.com",
-                  ImagenUrl = "/imagenes/reddit.png"
-
-              },
-              new Proyecto
-              {
-                  Titulo = "Steam",
-                  Descripcion = "Tienda virtual para comprar videojuegos",
-                  Link = "https://steam.com",
-                  ImagenUrl = "/imagenes/steam.png"
-
-              },
-            };
-        }
+        
 
         public IActionResult Privacy()
         {
